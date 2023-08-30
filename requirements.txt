@@ -1,0 +1,14 @@
+attrs==23.1.0
+flake8==6.1.0
+flake8-annotations==3.0.1
+flake8-docstrings==1.7.0
+flake8-quotes==3.3.2
+flake8-use-fstring==1.4
+flake8-use-pathlib==0.3.0
+mccabe==0.7.0
+numpy==1.25.2
+pep8-naming==0.13.3
+pycodestyle==2.11.0
+pydocstyle==6.3.0
+pyflakes==3.1.0
+snowballstemmer==2.2.0

@@ -1,0 +1,26 @@
+[flake8]
+
+indent-size = 4
+statistics = True
+
+multiline-quotes = """
+docstring-quotes = """
+inline-quotes = "
+
+# Cyclomatic complexity desactivated
+max-complexity = 15 
+
+# Ignore the unused import in __init__.py
+per-file-ignores = __init__.py:F401
+
+docstring-style=google
+
+# Also report % or .format strings
+fstring-ignore-format=True
+
+# Enforce correct indentation of hanging brackets
+hang-closing = True
+
+exclude =
+    venv/
+
