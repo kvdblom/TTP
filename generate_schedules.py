@@ -208,7 +208,9 @@ def create_random_schedule_games(n_teams: int) -> (np.array, bool):
 
                 # c. If max_streak would be exceeded, remove home/away games
                 # involving that team, depending on which streak it is.
-                for player in range(n_teams):
+                # TODO: Could start from team instead of 1, for efficiency
+                # (other games should already be excluded for other reasons)
+                for player in range(1, n_teams + 1):
                     streak_home, streak_away = count_streak(
                         schedule, player, round_n)
 
@@ -234,8 +236,9 @@ def create_random_schedule_games(n_teams: int) -> (np.array, bool):
                 choice_away = choice.at[0, "away_teams"]
 
                 # c. Put game in schedule, indicating away with negative
-                schedule[round_n, choice.home_teams-1] = -choice.away_teams
-                schedule[round_n, choice.away_teams-1] = choice.home_teams
+                # Away team plays an away game against the home team
+                schedule[round_n, choice.home_teams-1] = choice.away_teams
+                schedule[round_n, choice.away_teams-1] = -choice.home_teams
 
                 # 3. Remove games from relevant DataFrames to prepare for the
                 # next assignment and/or round.
@@ -266,16 +269,23 @@ def count_streak(schedule: np.array,
 
     Arguments:
         schedule: A partial schedule.
-        team: The team to count the streaks for.
+        team: The team to count the streaks for. Must be a positive integer.
         current_round: The round for which to count the preceding streaks.
 
     Returns:
         streak_home: int of the home streak
         streak_away: int of the away streak
     """
+    # Check team number is valid
+    if team < 1:
+        print("Error: count_streak() was given a non-positive integer "
+              f"({team}) as team number. Stopping execution.")
+        sys.exit(-1)
+
     streak_home = 0
     streak_away = 0
 
+    # Check backwards from the current round
     for round_n in range(current_round - 1, -1, -1):
         if schedule[round_n, team-1] is None:
             # If None is found the streak ends here and we stop
@@ -386,8 +396,9 @@ if n_teams % 2 == 0:
             print(f"{i}: {constraints}")
             if sum(constraints) == 0:
                 perfect += 1
-    print(
-        f"n_teams: {n_teams}, n_schedules: {n_schedules}, perfect: {perfect}")
+    percent_perfect = perfect / n_schedules * 100
+    print(f"n_teams: {n_teams}, n_schedules: {n_schedules}, "
+          f"perfect: {perfect}, percentage perfect: {percent_perfect}")
     # create_schedules(n_teams, n_schedules)
 else:
     print(f"Number of teams must be even, but was {n_teams}.")
