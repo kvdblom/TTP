@@ -1,12 +1,10 @@
-"""Code to generate TTP schedules and check their constraints.
-
-Code adapted from:
-https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
-"""
+#!/usr/bin/env python3
+"""Code to generate TTP schedules and check their constraints."""
 
 import random
 from datetime import datetime
 import sys
+import argparse
 
 import numpy as np
 import pandas as pd
@@ -16,6 +14,9 @@ max_streak = 3
 
 def check_schedule_constraints(schedule: np.array, n_teams: int) -> list[int]:
     """Calculate the number of violations present in the schedule.
+
+    Code adapted from:
+    https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
 
     Arguments:
         schedule ([int, int]) : Schedule
@@ -78,6 +79,9 @@ def check_double_round_robin(team: int,
                              away_played: np.array) -> int:
     """Check for double round-robin violations.
 
+    Code adapted from:
+    https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
+
     Arguments:
         team: int indicating which team to check
         games_played: int array with total games played per opponent
@@ -111,6 +115,9 @@ def check_mismatched_games(team: int, round_n: int, schedule: np.array) -> int:
 
     (matches are paired)
 
+    Code adapted from:
+    https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
+
     Arguments:
         team: int indicating which team to check
         round_n: int indicating which round to check
@@ -129,6 +136,9 @@ def check_mismatched_games(team: int, round_n: int, schedule: np.array) -> int:
 
 def create_random_schedule_pairs(n_teams: int) -> np.array:
     """Generate a randomly paired schedule.
+
+    Code adapted from:
+    https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
 
     Arguments:
         n_teams (int) : The number of teams present in the schedule
@@ -334,6 +344,9 @@ def generate_games_list(n_teams: int) -> pd.DataFrame:
 def create_schedules(n_teams: int, n_schedules: int) -> None:
     """Generate n schedules and saves the violations of the schedules.
 
+    Code adapted from:
+    https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
+
     Arguments:
         n_schedules (int) : The number of schedules to generate
         n_teams (int) : The number of teams present in the schedule
@@ -383,22 +396,32 @@ def create_schedules(n_teams: int, n_schedules: int) -> None:
     time = time.total_seconds()
 
 
-n_teams = int(sys.argv[1])
-n_schedules = 100000
+if __name__ == "__main__":
+    """Code adapted from:
+    https://github.com/kristianverduin/MSc-Thesis-RandomScheduleGeneration-ViolationReduction-TTP/blob/4a00582f02819f7b75a77cd2d638b068026b6608/violations.py
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument("n_teams", type=int)
+    args = parser.parse_args()
 
-if n_teams % 2 == 0:
-    perfect = 0
-    for i in range(0, n_schedules):
-        schedule, good = create_random_schedule_games(n_teams)
-        if good:
-            # print(schedule)
-            constraints = check_schedule_constraints(schedule, n_teams)
-            print(f"{i}: {constraints}")
-            if sum(constraints) == 0:
-                perfect += 1
-    percent_perfect = perfect / n_schedules * 100
-    print(f"n_teams: {n_teams}, n_schedules: {n_schedules}, "
-          f"perfect: {perfect}, percentage perfect: {percent_perfect}")
-    # create_schedules(n_teams, n_schedules)
-else:
-    print(f"Number of teams must be even, but was {n_teams}.")
+    n_teams = args.n_teams
+    n_schedules = 10000
+
+    if n_teams % 2 == 0:
+        feasible = 0
+
+        for i in range(0, n_schedules):
+            schedule, good = create_random_schedule_games(n_teams)
+
+            if good:
+                # print(schedule)
+                constraints = check_schedule_constraints(schedule, n_teams)
+                print(f"{i}: {constraints}")
+                if sum(constraints) == 0:
+                    feasible += 1
+        percent_feasible = feasible / n_schedules * 100
+        print(f"n_teams: {n_teams}, n_schedules: {n_schedules}, "
+              f"feasible: {feasible}, percentage feasible: {percent_feasible}")
+        # create_schedules(n_teams, n_schedules)
+    else:
+        print(f"Number of teams must be even, but was {n_teams}.")
